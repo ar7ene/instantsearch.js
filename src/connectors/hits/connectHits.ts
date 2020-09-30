@@ -58,8 +58,7 @@ const connectHits: HitsConnector = function connectHits(
       init(initOptions) {
         renderFn(
           {
-            ...this.getWidgetRenderState!(initOptions.renderState, initOptions)
-              .hits!,
+            ...this.getWidgetRenderState(initOptions),
             instantSearchInstance: initOptions.instantSearchInstance,
           },
           true
@@ -69,25 +68,26 @@ const connectHits: HitsConnector = function connectHits(
       render(renderOptions) {
         renderFn(
           {
-            ...this.getWidgetRenderState!(
-              renderOptions.renderState,
-              renderOptions
-            ).hits!,
+            ...this.getWidgetRenderState(renderOptions),
             instantSearchInstance: renderOptions.instantSearchInstance,
           },
           false
         );
       },
 
-      getWidgetRenderState(renderState, { results }) {
+      getRenderState(renderState, renderOptions) {
+        return {
+          ...renderState,
+          hits: this.getWidgetRenderState(renderOptions),
+        };
+      },
+
+      getWidgetRenderState({ results }) {
         if (!results) {
           return {
-            ...renderState,
-            hits: {
-              hits: [],
-              results: undefined,
-              widgetParams,
-            },
+            hits: [],
+            results: undefined,
+            widgetParams,
           };
         }
 
@@ -116,12 +116,9 @@ const connectHits: HitsConnector = function connectHits(
         >).__escaped = initialEscaped;
 
         return {
-          ...renderState,
-          hits: {
-            hits: results.hits,
-            results,
-            widgetParams,
-          },
+          hits: results.hits,
+          results,
+          widgetParams,
         };
       },
 

@@ -206,6 +206,11 @@ export type HierarchicalMenuWidgetRenderState = WidgetRenderState<
   }
 >;
 
+export type HitsWidgetRenderState = WidgetRenderState<
+  HitsRendererOptions,
+  HitsConnectorParams
+>;
+
 export type IndexRenderState = Partial<{
   searchBox: SearchBoxWidgetRenderState;
   autocomplete: AutocompleteWidgetRenderState;
@@ -218,7 +223,7 @@ export type IndexRenderState = Partial<{
   hierarchicalMenu: {
     [attribute: string]: HierarchicalMenuWidgetRenderState;
   };
-  hits: WidgetRenderState<HitsRendererOptions, HitsConnectorParams>;
+  hits: HitsWidgetRenderState;
 }>;
 
 type WidgetRenderState<
@@ -233,7 +238,7 @@ type WidgetRenderState<
  * Widgets are the building blocks of InstantSearch.js. Any valid widget must
  * have at least a `render` or a `init` function.
  */
-export type Widget = {
+export type GenericWidget = {
   /**
    * Called once before the first search
    */
@@ -278,6 +283,7 @@ export type Widget = {
     uiState: IndexUiState,
     widgetStateOptions: WidgetUiStateOptions
   ): IndexUiState;
+  getWidgetRenderState?: (renderOptions: InitOptions | RenderOptions) => any;
   /**
    * This function is required for a widget to behave correctly when a URL is
    * loaded via e.g. routing. It receives the current UiState and applied search
@@ -289,73 +295,184 @@ export type Widget = {
     state: SearchParameters,
     widgetSearchParametersOptions: WidgetSearchParametersOptions
   ): SearchParameters;
-} & (
-  | {
-      $$type: 'ais.searchBox';
-      getWidgetRenderState?: (
-        renderOptions: InitOptions | RenderOptions
-      ) => SearchBoxWidgetRenderState;
-    }
-  | {
-      $$type: 'ais.autocomplete';
-      getWidgetRenderState?: (
-        renderOptions: InitOptions | RenderOptions
-      ) => AutocompleteWidgetRenderState;
-    }
-  | {
-      $$type: 'ais.breadcrumb';
-      getWidgetRenderState?: (
-        renderOptions: InitOptions | RenderOptions
-      ) => BreadcrumbWidgetRenderState;
-    }
-  | {
-      $$type: 'ais.clearRefinements';
-      getWidgetRenderState?: (
-        renderOptions: InitOptions | RenderOptions
-      ) => ClearRefinementsWidgetRenderState;
-    }
-  | {
-      $$type: 'ais.configure';
-      getWidgetRenderState?: (
-        renderOptions: InitOptions | RenderOptions
-      ) => ConfigureWidgetRenderState;
-    }
-  | {
-      $$type: 'ais.currentRefinements';
-      getWidgetRenderState?: (
-        renderOptions: InitOptions | RenderOptions
-      ) => CurrentRefinementsWidgetRenderState;
-    }
-  | {
-      $$type: 'ais.hierarchicalMenu';
-      getWidgetRenderState?: (
-        renderOptions: InitOptions | RenderOptions
-      ) => HierarchicalMenuWidgetRenderState;
-    }
-  | { $$type: 'ais.configureRelatedItems' }
-  | { $$type: 'ais.geoSearch' }
-  | { $$type: 'ais.hits' }
-  | { $$type: 'ais.hitsPerPage' }
-  | { $$type: 'ais.index' }
-  | { $$type: 'ais.infiniteHits' }
-  | { $$type: 'ais.menu' }
-  | { $$type: 'ais.numericMenu' }
-  | { $$type: 'ais.pagination' }
-  | { $$type: 'ais.places' }
-  | { $$type: 'ais.poweredBy' }
-  | { $$type: 'ais.queryRules' }
-  | { $$type: 'ais.queryRuleCustomData' }
-  | { $$type: 'ais.queryRuleContext' }
-  | { $$type: 'ais.range' }
-  | { $$type: 'ais.rangeInput' }
-  | { $$type: 'ais.rangeSlider' }
-  | { $$type: 'ais.ratingMenu' }
-  | { $$type: 'ais.refinementList' }
-  | { $$type: 'ais.sortBy' }
-  | { $$type: 'ais.stats' }
-  | { $$type: 'ais.toggleRefinement' }
-  | { $$type: 'ais.voiceSearch' }
-);
+};
+
+export interface HitsWidget extends GenericWidget {
+  $$type: 'ais.hits';
+  getWidgetRenderState: (
+    renderOptions: InitOptions | RenderOptions
+  ) => HitsWidgetRenderState;
+}
+
+export interface SearchBoxWidget extends GenericWidget {
+  $$type: 'ais.searchBox';
+  getWidgetRenderState?: (
+    renderOptions: InitOptions | RenderOptions
+  ) => SearchBoxWidgetRenderState;
+}
+
+export interface AutocompleteWidget extends GenericWidget {
+  $$type: 'ais.autocomplete';
+  getWidgetRenderState?: (
+    renderOptions: InitOptions | RenderOptions
+  ) => AutocompleteWidgetRenderState;
+}
+
+export interface BreadcrumbWidget extends GenericWidget {
+  $$type: 'ais.breadcrumb';
+  getWidgetRenderState?: (
+    renderOptions: InitOptions | RenderOptions
+  ) => BreadcrumbWidgetRenderState;
+}
+
+export interface ClearRefinementsWidget extends GenericWidget {
+  $$type: 'ais.clearRefinements';
+  getWidgetRenderState?: (
+    renderOptions: InitOptions | RenderOptions
+  ) => ClearRefinementsWidgetRenderState;
+}
+
+export interface ConfigureWidget extends GenericWidget {
+  $$type: 'ais.configure';
+  getWidgetRenderState?: (
+    renderOptions: InitOptions | RenderOptions
+  ) => ConfigureWidgetRenderState;
+}
+
+export interface CurrentRefinementsWidget extends GenericWidget {
+  $$type: 'ais.currentRefinements';
+  getWidgetRenderState?: (
+    renderOptions: InitOptions | RenderOptions
+  ) => CurrentRefinementsWidgetRenderState;
+}
+
+export interface HierarchicalMenuWidget extends GenericWidget {
+  $$type: 'ais.hierarchicalMenu';
+  getWidgetRenderState?: (
+    renderOptions: InitOptions | RenderOptions
+  ) => HierarchicalMenuWidgetRenderState;
+}
+
+export interface ConfigureRelatedItemsWidget extends GenericWidget {
+  $$type: 'ais.configureRelatedItems';
+}
+
+export interface GeoSearchWidget extends GenericWidget {
+  $$type: 'ais.geoSearch';
+}
+
+export interface HitsPerPageWidget extends GenericWidget {
+  $$type: 'ais.hitsPerPage';
+}
+
+export interface IndexWidget extends GenericWidget {
+  $$type: 'ais.index';
+}
+
+export interface InfiniteHitsWidget extends GenericWidget {
+  $$type: 'ais.infiniteHits';
+}
+
+export interface MenuWidget extends GenericWidget {
+  $$type: 'ais.menu';
+}
+
+export interface NumericMenuWidget extends GenericWidget {
+  $$type: 'ais.numericMenu';
+}
+
+export interface PaginationWidget extends GenericWidget {
+  $$type: 'ais.pagination';
+}
+
+export interface PlacesWidget extends GenericWidget {
+  $$type: 'ais.places';
+}
+
+export interface PoweredByWidget extends GenericWidget {
+  $$type: 'ais.poweredBy';
+}
+
+export interface QueryRulesWidget extends GenericWidget {
+  $$type: 'ais.queryRules';
+}
+
+export interface QueryRuleCustomDataWidget extends GenericWidget {
+  $$type: 'ais.queryRuleCustomData';
+}
+
+export interface QueryRuleContextWidget extends GenericWidget {
+  $$type: 'ais.queryRuleContext';
+}
+
+export interface RangeWidget extends GenericWidget {
+  $$type: 'ais.range';
+}
+
+export interface RangeInputWidget extends GenericWidget {
+  $$type: 'ais.rangeInput';
+}
+
+export interface RangeSliderWidget extends GenericWidget {
+  $$type: 'ais.rangeSlider';
+}
+
+export interface RatingMenuWidget extends GenericWidget {
+  $$type: 'ais.ratingMenu';
+}
+
+export interface RefinementListWidget extends GenericWidget {
+  $$type: 'ais.refinementList';
+}
+
+export interface SortByWidget extends GenericWidget {
+  $$type: 'ais.sortBy';
+}
+
+export interface StatsWidget extends GenericWidget {
+  $$type: 'ais.stats';
+}
+
+export interface ToggleRefinementWidget extends GenericWidget {
+  $$type: 'ais.toggleRefinement';
+}
+
+export interface VoiceSearchWidget extends GenericWidget {
+  $$type: 'ais.voiceSearch';
+}
+
+export type Widget =
+  | GenericWidget
+  | HitsWidget
+  | SearchBoxWidget
+  | AutocompleteWidget
+  | BreadcrumbWidget
+  | ClearRefinementsWidget
+  | ConfigureWidget
+  | CurrentRefinementsWidget
+  | HierarchicalMenuWidget
+  | ConfigureRelatedItemsWidget
+  | GeoSearchWidget
+  | HitsPerPageWidget
+  | IndexWidget
+  | InfiniteHitsWidget
+  | MenuWidget
+  | NumericMenuWidget
+  | PaginationWidget
+  | PlacesWidget
+  | PoweredByWidget
+  | QueryRulesWidget
+  | QueryRuleCustomDataWidget
+  | QueryRuleContextWidget
+  | RangeWidget
+  | RangeInputWidget
+  | RangeSliderWidget
+  | RatingMenuWidget
+  | RefinementListWidget
+  | SortByWidget
+  | StatsWidget
+  | ToggleRefinementWidget
+  | VoiceSearchWidget;
 
 /**
  * The function that creates a new widget.
